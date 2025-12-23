@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StructAI - Assistente IA para Estruturas de Concreto</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #D4AF37;
+            --primary-dark: #B8960F;
+            --secondary: #1a1a2e;
+            --secondary-light: #16213e;
+            --accent: #0f3460;
+            --accent-light: #533483;
+            --text-light: #e4e4e4;
+            --text-dark: #1a1a1a;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --danger: #e63946;
+            --success: #06ffa5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(6, 255, 165, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(83, 52, 131, 0.1) 0%, transparent 50%);
+            animation: gradientShift 20s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Container Principal */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-dark);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .logo-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.7;
+            margin-top: 2px;
+            letter-spacing: 1px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            animation: fadeIn 0.8s ease-out 0.3s backwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .sidebar-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-tree {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-link:hover::before {
+            transform: scaleY(1);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.05) 100%);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .nav-link.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .nav-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link.expanded .nav-arrow {
+            transform: rotate(90deg);
+        }
+
+        .nav-children {
+            list-style: none;
+            margin-left: 20px;
+            margin-top: 8px;
+            padding-left: 15px;
+            border-left: 2px solid rgba(212, 175, 55, 0.2);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-children.show {
+            max-height: 1000px;
+        }
+
+        .nav-children .nav-link {
+            font-size: 13px;
+            padding: 10px 12px;
+        }
+
+        /* Content Area */
+        .content-area {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 35px;
+            min-height: 600px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .content-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .breadcrumb span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .info-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* AI Chat Interface */
+        .ai-chat-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--success) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--text-dark);
+        }
+
+        .chat-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .chat-info p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .chat-messages {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message.user {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--primary);
+            margin-left: 40px;
+        }
+
+        .message-sender {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .message-text {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-family: 'Work Sans', sans-serif;
+            resize: none;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .chat-send-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0 25px;
+            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .chat-send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .chat-send-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Calculation Form */
+        .calc-form {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input,
+        .form-select {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px 15px;
+            color: var(--text-light);
+            font-size: 14px;
+            font-family: 'Work Sans', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .form-select option {
+            background: var(--secondary);
+            color: var(--text-light);
+        }
+
+        .calc-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 40px;
+            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.5);
+        }
+
+        .calc-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results Display */
+        .results-panel {
+            background: linear-gradient(135deg, rgba(6, 255, 165, 0.1) 0%, rgba(212, 175, 55, 0.1) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .results-panel.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .result-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .logo-section {
+                flex-direction: column;
+            }
+
+            .content-area {
+                padding: 25px 20px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Hidden Class */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>STRUCT<span style="color: var(--success)">AI</span></h1>
+                    <p>Assistente IA para Estruturas de Concreto</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                    <span>Tema</span>
+                </button>
+                <button class="header-btn" onclick="showHelp()">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Ajuda</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar">
+                <div class="sidebar-title">
+                    <i class="fas fa-bars"></i>
+                    Navegação
+                </div>
+                <ul class="nav-tree">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showHome(event)">
+                            <span><i class="nav-icon fas fa-home"></i>Início</span>
+                            <i class="fas fa-chevron-right nav-arrow"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="toggleNav(event, 'estrutura')">
+                            <span><i class="nav-icon fas fa-building"></i>Estrutura de Concreto Armado</span>
+                            <i class="fas fa-chevron-right nav-arrow"></i>
+                        </a>
+                        <ul class="nav-children" id="estrutura">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="toggleNav(event, 'nbrs')">
+                                    <span><i class="nav-icon fas fa-book"></i>NBRs</span>
+                                    <i class="fas fa-chevron-right nav-arrow"></i>
+                                </a>
+                                <ul class="nav-children" id="nbrs">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'nbr-6118')">
+                                            <span>NBR-6118 (Projeto de Estruturas)</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'nbr-6120')">
+                                            <span>NBR-6120 (Ações e Segurança)</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'nbr-6122')">
+                                            <span>NBR-6122 (Fundações)</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'nbr-6123')">
+                                            <span>NBR-6123 (Forças devidas ao vento)</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'nbr-8681')">
+                                            <span>NBR-8681 (Ações e Segurança)</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="toggleNav(event, 'calculo')">
+                                    <span><i class="nav-icon fas fa-calculator"></i>Cálculo</span>
+                                    <i class="fas fa-chevron-right nav-arrow"></i>
+                                </a>
+                                <ul class="nav-children" id="calculo">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'calc-laje')">
+                                            <span><i class="nav-icon fas fa-square"></i>Laje</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'calc-viga')">
+                                            <span><i class="nav-icon fas fa-minus"></i>Viga</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'calc-pilar')">
+                                            <span><i class="nav-icon fas fa-grip-lines-vertical"></i>Pilar</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'calc-sapata')">
+                                            <span><i class="nav-icon fas fa-layer-group"></i>Sapata</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" onclick="showContent(event, 'calc-bloco')">
+                                            <span><i class="nav-icon fas fa-cube"></i>Bloco</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="showContent(event, 'projetos')">
+                                    <span><i class="nav-icon fas fa-file-pdf"></i>Projetos - PDF</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="content-area" id="contentArea">
+                <!-- Home Content -->
+                <div id="homeContent">
+                    <div class="content-header">
+                        <div>
+                            <h2 class="content-title">Bem-vindo ao StructAI</h2>
+                            <div class="breadcrumb">
+                                <span><i class="fas fa-home"></i> Início</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cards-grid">
+                        <div class="info-card" onclick="navigateTo('estrutura')">
+                            <div class="card-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <h3 class="card-title">Estruturas de Concreto</h3>
+                            <p class="card-description">Acesse normas técnicas (NBRs), realize cálculos estruturais e gere projetos completos.</p>
+                        </div>
+
+                        <div class="info-card" onclick="navigateTo('calculo')">
+                            <div class="card-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <h3 class="card-title">Cálculos Estruturais</h3>
+                            <p class="card-description">Ferramentas para dimensionamento de lajes, vigas, pilares, sapatas e blocos.</p>
+                        </div>
+
+                        <div class="info-card" onclick="showContent(event, 'projetos')">
+                            <div class="card-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <h3 class="card-title">Geração de Projetos</h3>
+                            <p class="card-description">Exporte seus cálculos e análises em formato PDF profissional.</p>
+                        </div>
+
+                        <div class="info-card" onclick="showAIChat()">
+                            <div class="card-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3 class="card-title">Assistente IA</h3>
+                            <p class="card-description">Tire dúvidas técnicas e obtenha suporte inteligente em tempo real.</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Chat Section -->
+                    <div class="ai-chat-section">
+                        <div class="chat-header">
+                            <div class="chat-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="chat-info">
+                                <h3>Assistente IA StructAI</h3>
+                                <p>Online • Pronto para ajudar</p>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message">
+                                <div class="message-sender">StructAI</div>
+                                <div class="message-text">Olá! Sou seu assistente especializado em estruturas de concreto armado. Como posso ajudá-lo hoje?</div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <textarea class="chat-input" id="chatInput" placeholder="Digite sua pergunta sobre estruturas de concreto..." rows="3"></textarea>
+                            <button class="chat-send-btn" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Content Area -->
+                <div id="dynamicContent" class="hidden"></div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Navigation Functions
+        function toggleNav(event, targetId) {
+            event.preventDefault();
+            const link = event.currentTarget;
+            const target = document.getElementById(targetId);
+            
+            link.classList.toggle('expanded');
+            target.classList.toggle('show');
+        }
+
+        function showHome(event) {
+            event.preventDefault();
+            document.getElementById('homeContent').classList.remove('hidden');
+            document.getElementById('dynamicContent').classList.add('hidden');
+            
+            // Update active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        function navigateTo(targetId) {
+            const element = document.getElementById(targetId);
+            if (element) {
+                const parentLink = element.previousElementSibling;
+                if (parentLink && !element.classList.contains('show')) {
+                    parentLink.click();
+                }
+            }
+        }
+
+        function showContent(event, contentType) {
+            event.preventDefault();
+            
+            // Update active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Hide home, show dynamic content
+            document.getElementById('homeContent').classList.add('hidden');
+            const dynamicContent = document.getElementById('dynamicContent');
+            dynamicContent.classList.remove('hidden');
+
+            // Load content based on type
+            switch(contentType) {
+                case 'calc-laje':
+                    loadLajeCalc();
+                    break;
+                case 'calc-viga':
+                    loadVigaCalc();
+                    break;
+                case 'calc-pilar':
+                    loadPilarCalc();
+                    break;
+                case 'calc-sapata':
+                    loadSapataCalc();
+                    break;
+                case 'calc-bloco':
+                    loadBlocoCalc();
+                    break;
+                case 'nbr-6118':
+                    loadNBRInfo('NBR-6118', 'Projeto de Estruturas de Concreto');
+                    break;
+                case 'nbr-6120':
+                    loadNBRInfo('NBR-6120', 'Ações para Cálculo de Estruturas de Edificações');
+                    break;
+                case 'nbr-6122':
+                    loadNBRInfo('NBR-6122', 'Projeto e Execução de Fundações');
+                    break;
+                case 'nbr-6123':
+                    loadNBRInfo('NBR-6123', 'Forças Devidas ao Vento em Edificações');
+                    break;
+                case 'nbr-8681':
+                    loadNBRInfo('NBR-8681', 'Ações e Segurança nas Estruturas');
+                    break;
+                case 'projetos':
+                    loadProjetosPDF();
+                    break;
+                default:
+                    dynamicContent.innerHTML = '<p>Conteúdo em desenvolvimento...</p>';
+            }
+        }
+
+        // Load Calculation Forms
+        function loadLajeCalc() {
+            const content = `
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title">Cálculo de Laje</h2>
+                        <div class="breadcrumb">
+                            <span><i class="fas fa-home"></i> Início</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Cálculo</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Laje</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-ruler-combined"></i>
+                            Dimensões da Laje
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Largura (m)</label>
+                                <input type="number" class="form-input" id="lajeWidth" placeholder="Ex: 4.5" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Comprimento (m)</label>
+                                <input type="number" class="form-input" id="lajeLength" placeholder="Ex: 6.0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Espessura (cm)</label>
+                                <input type="number" class="form-input" id="lajeThickness" placeholder="Ex: 12" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-weight-hanging"></i>
+                            Carregamentos
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Carga Permanente (kN/m²)</label>
+                                <input type="number" class="form-input" id="lajeCargaPerm" placeholder="Ex: 1.5" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Carga Acidental (kN/m²)</label>
+                                <input type="number" class="form-input" id="lajeCargaAcid" placeholder="Ex: 2.0" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Laje</label>
+                                <select class="form-select" id="lajeTipo">
+                                    <option value="armada_uma">Armada em uma direção</option>
+                                    <option value="armada_duas">Armada em duas direções</option>
+                                    <option value="nervurada">Nervurada</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-cog"></i>
+                            Materiais
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Fck do Concreto (MPa)</label>
+                                <select class="form-select" id="lajeFck">
+                                    <option value="20">20 MPa</option>
+                                    <option value="25">25 MPa</option>
+                                    <option value="30" selected>30 MPa</option>
+                                    <option value="35">35 MPa</option>
+                                    <option value="40">40 MPa</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Aço</label>
+                                <select class="form-select" id="lajeAco">
+                                    <option value="CA50" selected>CA-50</option>
+                                    <option value="CA60">CA-60</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cobrimento (cm)</label>
+                                <input type="number" class="form-input" id="lajeCobrimento" value="2.5" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="calc-btn" onclick="calcularLaje()">
+                        <i class="fas fa-play"></i>
+                        Calcular Laje
+                    </button>
+                </div>
+
+                <div class="results-panel" id="lajeResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-check-circle"></i>
+                        Resultados do Dimensionamento
+                    </h3>
+                    <div id="lajeResultsContent"></div>
+                </div>
+            `;
+            document.getElementById('dynamicContent').innerHTML = content;
+        }
+
+        function loadVigaCalc() {
+            const content = `
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title">Cálculo de Viga</h2>
+                        <div class="breadcrumb">
+                            <span><i class="fas fa-home"></i> Início</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Cálculo</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Viga</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-ruler-combined"></i>
+                            Dimensões da Viga
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Vão (m)</label>
+                                <input type="number" class="form-input" id="vigaVao" placeholder="Ex: 5.0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Base (cm)</label>
+                                <input type="number" class="form-input" id="vigaBase" placeholder="Ex: 20" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Altura (cm)</label>
+                                <input type="number" class="form-input" id="vigaAltura" placeholder="Ex: 50" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-weight-hanging"></i>
+                            Carregamentos
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Carga Permanente (kN/m)</label>
+                                <input type="number" class="form-input" id="vigaCargaPerm" placeholder="Ex: 15" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Carga Acidental (kN/m)</label>
+                                <input type="number" class="form-input" id="vigaCargaAcid" placeholder="Ex: 10" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Apoio</label>
+                                <select class="form-select" id="vigaApoio">
+                                    <option value="simples">Simplesmente Apoiada</option>
+                                    <option value="continua">Contínua</option>
+                                    <option value="engastada">Engastada</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="calc-btn" onclick="calcularViga()">
+                        <i class="fas fa-play"></i>
+                        Calcular Viga
+                    </button>
+                </div>
+
+                <div class="results-panel" id="vigaResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-check-circle"></i>
+                        Resultados do Dimensionamento
+                    </h3>
+                    <div id="vigaResultsContent"></div>
+                </div>
+            `;
+            document.getElementById('dynamicContent').innerHTML = content;
+        }
+
+        function loadPilarCalc() {
+            const content = `
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title">Cálculo de Pilar</h2>
+                        <div class="breadcrumb">
+                            <span><i class="fas fa-home"></i> Início</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Cálculo</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Pilar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-ruler-combined"></i>
+                            Dimensões do Pilar
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Base (cm)</label>
+                                <input type="number" class="form-input" id="pilarBase" placeholder="Ex: 25" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Altura (cm)</label>
+                                <input type="number" class="form-input" id="pilarAltura" placeholder="Ex: 40" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Comprimento (m)</label>
+                                <input type="number" class="form-input" id="pilarComprimento" placeholder="Ex: 3.0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-weight-hanging"></i>
+                            Esforços
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Força Normal (kN)</label>
+                                <input type="number" class="form-input" id="pilarForcaNormal" placeholder="Ex: 500" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Momento X (kN.m)</label>
+                                <input type="number" class="form-input" id="pilarMomentoX" placeholder="Ex: 20" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Momento Y (kN.m)</label>
+                                <input type="number" class="form-input" id="pilarMomentoY" placeholder="Ex: 15" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="calc-btn" onclick="calcularPilar()">
+                        <i class="fas fa-play"></i>
+                        Calcular Pilar
+                    </button>
+                </div>
+
+                <div class="results-panel" id="pilarResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-check-circle"></i>
+                        Resultados do Dimensionamento
+                    </h3>
+                    <div id="pilarResultsContent"></div>
+                </div>
+            `;
+            document.getElementById('dynamicContent').innerHTML = content;
+        }
+
+        function loadSapataCalc() {
+            const content = `
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title">Cálculo de Sapata</h2>
+                        <div class="breadcrumb">
+                            <span><i class="fas fa-home"></i> Início</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Cálculo</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Sapata</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-layer-group"></i>
+                            Dados da Sapata
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Sapata</label>
+                                <select class="form-select" id="sapataTipo">
+                                    <option value="isolada">Isolada</option>
+                                    <option value="corrida">Corrida</option>
+                                    <option value="associada">Associada</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Carga (kN)</label>
+                                <input type="number" class="form-input" id="sapataCarga" placeholder="Ex: 600" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tensão Admissível Solo (kPa)</label>
+                                <input type="number" class="form-input" id="sapataTensao" placeholder="Ex: 200" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="calc-btn" onclick="calcularSapata()">
+                        <i class="fas fa-play"></i>
+                        Calcular Sapata
+                    </button>
+                </div>
+
+                <div class="results-panel" id="sapataResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-check-circle"></i>
+                        Resultados do Dimensionamento
+                    </h3>
+                    <div id="sapataResultsContent"></div>
+                </div>
+            `;
+            document.getElementById('dynamicContent').innerHTML = content;
+        }
+
+        function loadBlocoCalc() {
+            const content = `
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title">Cálculo de Bloco</h2>
+                        <div class="breadcrumb">
+                            <span><i class="fas fa-home"></i> Início</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Cálculo</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Bloco</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calc-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-cube"></i>
+                            Dados do Bloco
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Número de Estacas</label>
+                                <select class="form-select" id="blocoEstacas">
+                                    <option value="2">2 Estacas</option>
+                                    <option value="3">3 Estacas</option>
+                                    <option value="4">4 Estacas</option>
+                                    <option value="6">6 Estacas</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Carga Total (kN)</label>
+                                <input type="number" class="form-input" id="blocoCarga" placeholder="Ex: 800" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Diâmetro Estaca (cm)</label>
+                                <input type="number" class="form-input" id="blocoDiametro" placeholder="Ex: 30" step="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="calc-btn" onclick="calcularBloco()">
+                        <i class="fas fa-play"></i>
+                        Calcular Bloco
+                    </button>
+                </div>
+
+                <div class="results-panel" id="blocoResults">
+                    <h3 class="results-title">
+                        <i class="fas fa-check-circle"></i>
+                        Resultados do Dimensionamento
+                    </h3>
+                    <div id="blocoResultsContent"></div>
+                </div>
+            `;
+            document.getElementById('dynamicContent').innerHTML = content;
+        }
+
+        function loadNBRInfo(nbrCode, nbrTitle) {
+            const content = `
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title">${nbrCode}</h2>
+                        <div class="breadcrumb">
+                            <span><i class="fas fa-home"></i> Início</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>NBRs</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>${nbrCode}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 15px; padding: 30px; margin-bottom: 20px;">
+                    <h3 style="color: var(--primary); font-size: 20px; margin-bottom: 15px; font-family: 'Orbitron', sans-serif;">
+                        <i class="fas fa-book"></i> ${nbrTitle}
+                    </h3>
+                    <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.8; margin-bottom: 20px;">
+                        Esta norma estabelece os requisitos gerais para o projeto de estruturas de concreto armado, protendido e simples, incluindo procedimentos para análise estrutural, dimensionamento, verificações de estados limites e detalhamento das armaduras.
+                    </p>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="calc-btn" onclick="consultarNBR('${nbrCode}')">
+                            <i class="fas fa-file-pdf"></i>
+                            Consultar Norma Completa
+                        </button>
+                        <button class="header-btn" onclick="baixarResumo('${nbrCode}')">
+                            <i class="fas fa-download"></i>
+                            Baixar Resumo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ai-chat-section">
+                    <div class="chat-header">
+                        <div class="chat-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="chat-info">
+                            <h3>Pergunte sobre a ${nbrCode}</h3>
+                            <p>Assistente especializado em normas técnicas</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="nbrChatMessages">
+                        <div class="message">
+                            <div class="message-sender">StructAI</div>
+                            <div class="message-text">Olá! Posso ajudá-lo com dúvidas sobre a ${nbrCode} - ${nbrTitle}. O que você gostaria de saber?</div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <textarea class="chat-input" id="nbrChatInput" placeholder="Ex: Quais são os cobrimentos mínimos para lajes?" rows="2"></textarea>
+                        <button class="chat-send-btn" onclick="sendNBRMessage('${nbrCode}')">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('dynamicContent').innerHTML = content;
+        }
+
+        function loadProjetosPDF() {
+            const content = `
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title">Geração de Projetos - PDF</h2>
+                        <div class="breadcrumb">
+                            <span><i class="fas fa-home"></i> Início</span>
+                            <span><i class="fas fa-chevron-right"></i></span>
+                            <span>Projetos - PDF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="info-card" onclick="gerarMemorialCalculo()">
+                        <div class="card-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3 class="card-title">Memorial de Cálculo</h3>
+                        <p class="card-description">Gere memorial de cálculo completo com todos os dimensionamentos realizados.</p>
+                    </div>
+
+                    <div class="info-card" onclick="gerarPlantaBaixo()">
+                        <div class="card-icon">
+                            <i class="fas fa-drafting-compass"></i>
+                        </div>
+                        <h3 class="card-title">Planta de Formas</h3>
+                        <p class="card-description">Exporte plantas de formas de lajes, vigas e pilares em PDF técnico.</p>
+                    </div>
+
+                    <div class="info-card" onclick="gerarPlantaArmacao()">
+                        <div class="card-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3 class="card-title">Detalhamento de Armaduras</h3>
+                        <p class="card-description">Gere plantas com detalhamento completo das armaduras.</p>
+                    </div>
+
+                    <div class="info-card" onclick="gerarRelatorioCompleto()">
+                        <div class="card-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3 class="card-title">Relatório Completo</h3>
+                        <p class="card-description">Projeto estrutural completo com todos os documentos técnicos.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--glass-border); border-radius: 15px; padding: 30px; margin-top: 30px;">
+                    <h3 style="color: var(--primary); font-size: 18px; margin-bottom: 20px; font-family: 'Orbitron', sans-serif;">
+                        <i class="fas fa-cogs"></i> Configurações de Exportação
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Formato do Papel</label>
+                            <select class="form-select" id="pdfPapel">
+                                <option value="A4">A4</option>
+                                <option value="A3">A3</option>
+                                <option value="A2">A2</option>
+                                <option value="A1">A1</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Orientação</label>
+                            <select class="form-select" id="pdfOrientacao">
+                                <option value="retrato">Retrato</option>
+                                <option value="paisagem">Paisagem</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Incluir ART</label>
+                            <select class="form-select" id="pdfART">
+                                <option value="sim">Sim</option>
+                                <option value="nao">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('dynamicContent').innerHTML = content;
+        }
+
+        // Calculation Functions
+        function calcularLaje() {
+            const width = parseFloat(document.getElementById('lajeWidth').value);
+            const length = parseFloat(document.getElementById('lajeLength').value);
+            const thickness = parseFloat(document.getElementById('lajeThickness').value);
+            const cargaPerm = parseFloat(document.getElementById('lajeCargaPerm').value);
+            const cargaAcid = parseFloat(document.getElementById('lajeCargaAcid').value);
+
+            if (!width || !length || !thickness || !cargaPerm || !cargaAcid) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            // Simulação de cálculo (valores demonstrativos)
+            const area = width * length;
+            const volume = area * (thickness / 100);
+            const cargaTotal = (cargaPerm + cargaAcid) * 1.4; // Coeficiente de majoração
+            const momentoMaximo = (cargaTotal * Math.pow(Math.min(width, length), 2)) / 8;
+            const armaduraPrincipal = (momentoMaximo * 1000) / (30 * 0.9 * thickness * 10); // Simplificado
+            const armaduraDistribuicao = armaduraPrincipal * 0.2;
+
+            const resultsHTML = `
+                <div class="result-item">
+                    <span class="result-label">Área da Laje:</span>
+                    <span class="result-value">${area.toFixed(2)} m²</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Volume de Concreto:</span>
+                    <span class="result-value">${volume.toFixed(3)} m³</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Carga Total de Projeto:</span>
+                    <span class="result-value">${cargaTotal.toFixed(2)} kN/m²</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Momento Máximo:</span>
+                    <span class="result-value">${momentoMaximo.toFixed(2)} kN.m/m</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Armadura Principal:</span>
+                    <span class="result-value">Ø 10 c/ ${Math.max(10, 30 - Math.floor(armaduraPrincipal))} cm</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Armadura de Distribuição:</span>
+                    <span class="result-value">Ø 6.3 c/ ${Math.max(15, 35 - Math.floor(armaduraDistribuicao))} cm</span>
+                </div>
+            `;
+
+            document.getElementById('lajeResultsContent').innerHTML = resultsHTML;
+            document.getElementById('lajeResults').classList.add('show');
+        }
+
+        function calcularViga() {
+            const vao = parseFloat(document.getElementById('vigaVao').value);
+            const base = parseFloat(document.getElementById('vigaBase').value);
+            const altura = parseFloat(document.getElementById('vigaAltura').value);
+            const cargaPerm = parseFloat(document.getElementById('vigaCargaPerm').value);
+            const cargaAcid = parseFloat(document.getElementById('vigaCargaAcid').value);
+
+            if (!vao || !base || !altura || !cargaPerm || !cargaAcid) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            const cargaTotal = (cargaPerm + cargaAcid) * 1.4;
+            const momentoMaximo = (cargaTotal * Math.pow(vao, 2)) / 8;
+            const cortanteMaximo = (cargaTotal * vao) / 2;
+            const areaAco = (momentoMaximo * 100000) / (435 * 0.9 * altura * 10);
+            const numeroBarras = Math.ceil(areaAco / 2.0); // Assumindo barras de 16mm
+
+            const resultsHTML = `
+                <div class="result-item">
+                    <span class="result-label">Momento Máximo:</span>
+                    <span class="result-value">${momentoMaximo.toFixed(2)} kN.m</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Cortante Máximo:</span>
+                    <span class="result-value">${cortanteMaximo.toFixed(2)} kN</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Área de Aço Necessária:</span>
+                    <span class="result-value">${areaAco.toFixed(2)} cm²</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Armadura Longitudinal:</span>
+                    <span class="result-value">${numeroBarras} Ø 16mm</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Armadura Transversal:</span>
+                    <span class="result-value">Ø 6.3 c/ 15 cm (2 ramos)</span>
+                </div>
+            `;
+
+            document.getElementById('vigaResultsContent').innerHTML = resultsHTML;
+            document.getElementById('vigaResults').classList.add('show');
+        }
+
+        function calcularPilar() {
+            const base = parseFloat(document.getElementById('pilarBase').value);
+            const altura = parseFloat(document.getElementById('pilarAltura').value);
+            const comprimento = parseFloat(document.getElementById('pilarComprimento').value);
+            const forcaNormal = parseFloat(document.getElementById('pilarForcaNormal').value);
+
+            if (!base || !altura || !comprimento || !forcaNormal) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            const area = base * altura;
+            const tensao = (forcaNormal * 10) / area; // MPa
+            const esbeltez = (comprimento * 100) / Math.min(base, altura);
+            const taxaArmadura = Math.max(0.4, Math.min(4.0, tensao / 10));
+            const areaAco = (area * taxaArmadura) / 100;
+            const numeroBarras = Math.ceil(areaAco / 2.0);
+
+            const resultsHTML = `
+                <div class="result-item">
+                    <span class="result-label">Área da Seção:</span>
+                    <span class="result-value">${area} cm²</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Tensão de Compressão:</span>
+                    <span class="result-value">${tensao.toFixed(2)} MPa</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Índice de Esbeltez:</span>
+                    <span class="result-value">${esbeltez.toFixed(1)}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Taxa de Armadura:</span>
+                    <span class="result-value">${taxaArmadura.toFixed(2)}%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Armadura Longitudinal:</span>
+                    <span class="result-value">${numeroBarras} Ø 16mm</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Estribos:</span>
+                    <span class="result-value">Ø 6.3 c/ 20 cm</span>
+                </div>
+            `;
+
+            document.getElementById('pilarResultsContent').innerHTML = resultsHTML;
+            document.getElementById('pilarResults').classList.add('show');
+        }
+
+        function calcularSapata() {
+            const carga = parseFloat(document.getElementById('sapataCarga').value);
+            const tensao = parseFloat(document.getElementById('sapataTensao').value);
+
+            if (!carga || !tensao) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            const areaBase = carga / tensao;
+            const lado = Math.sqrt(areaBase);
+            const altura = Math.max(40, lado * 10); // Simplificado
+
+            const resultsHTML = `
+                <div class="result-item">
+                    <span class="result-label">Área da Base:</span>
+                    <span class="result-value">${areaBase.toFixed(2)} m²</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Dimensões Recomendadas:</span>
+                    <span class="result-value">${lado.toFixed(2)} x ${lado.toFixed(2)} m</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Altura da Sapata:</span>
+                    <span class="result-value">${altura.toFixed(0)} cm</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Volume de Concreto:</span>
+                    <span class="result-value">${(areaBase * altura / 100).toFixed(3)} m³</span>
+                </div>
+            `;
+
+            document.getElementById('sapataResultsContent').innerHTML = resultsHTML;
+            document.getElementById('sapataResults').classList.add('show');
+        }
+
+        function calcularBloco() {
+            const numEstacas = parseInt(document.getElementById('blocoEstacas').value);
+            const carga = parseFloat(document.getElementById('blocoCarga').value);
+            const diametro = parseFloat(document.getElementById('blocoDiametro').value);
+
+            if (!numEstacas || !carga || !diametro) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            const cargaPorEstaca = carga / numEstacas;
+            const espacamento = diametro * 3;
+            const altura = Math.max(60, espacamento * 0.8);
+
+            const resultsHTML = `
+                <div class="result-item">
+                    <span class="result-label">Carga por Estaca:</span>
+                    <span class="result-value">${cargaPorEstaca.toFixed(2)} kN</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Espaçamento entre Estacas:</span>
+                    <span class="result-value">${espacamento} cm</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Altura do Bloco:</span>
+                    <span class="result-value">${altura.toFixed(0)} cm</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Armadura de Tração:</span>
+                    <span class="result-value">12 Ø 12.5mm</span>
+                </div>
+            `;
+
+            document.getElementById('blocoResultsContent').innerHTML = resultsHTML;
+            document.getElementById('blocoResults').classList.add('show');
+        }
+
+        // AI Chat Functions
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `
+                <div class="message-sender">Você</div>
+                <div class="message-text">${message}</div>
+            `;
+            chatMessages.appendChild(userMsg);
+            
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Simulate AI response
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message';
+                aiMsg.innerHTML = `
+                    <div class="message-sender">StructAI</div>
+                    <div class="message-text">Entendo sua questão sobre "${message}". Estou processando as informações técnicas relevantes das normas brasileiras de estruturas de concreto para fornecer a resposta mais precisa...</div>
+                `;
+                chatMessages.appendChild(aiMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
+
+        function sendNBRMessage(nbrCode) {
+            const input = document.getElementById('nbrChatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            const chatMessages = document.getElementById('nbrChatMessages');
+            
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `
+                <div class="message-sender">Você</div>
+                <div class="message-text">${message}</div>
+            `;
+            chatMessages.appendChild(userMsg);
+            
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message';
+                aiMsg.innerHTML = `
+                    <div class="message-sender">StructAI</div>
+                    <div class="message-text">De acordo com a ${nbrCode}, vou consultar a norma para responder sua questão sobre "${message}"...</div>
+                `;
+                chatMessages.appendChild(aiMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
+
+        // Utility Functions
+        function showAIChat() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function toggleTheme() {
+            alert('Funcionalidade de tema em desenvolvimento');
+        }
+
+        function showHelp() {
+            alert('StructAI - Assistente IA para Estruturas de Concreto\n\nNavegue pelo menu lateral para acessar:\n- Normas Técnicas (NBRs)\n- Cálculos Estruturais\n- Geração de Projetos\n- Assistente IA\n\nPara suporte: contato@structai.com.br');
+        }
+
+        function consultarNBR(nbrCode) {
+            alert(`Abrindo consulta à ${nbrCode}...`);
+        }
+
+        function baixarResumo(nbrCode) {
+            alert(`Baixando resumo da ${nbrCode}...`);
+        }
+
+        function gerarMemorialCalculo() {
+            alert('Gerando Memorial de Cálculo...');
+        }
+
+        function gerarPlantaBaixo() {
+            alert('Gerando Planta de Formas...');
+        }
+
+        function gerarPlantaArmacao() {
+            alert('Gerando Detalhamento de Armaduras...');
+        }
+
+        function gerarRelatorioCompleto() {
+            alert('Gerando Relatório Completo do Projeto...');
+        }
+
+        // Enter key support for chat
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
